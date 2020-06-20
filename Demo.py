@@ -6,7 +6,8 @@ import time
 # 获取所有的链接
 # page: 页
 def fetchUrls(page):
-    baseurl = "http://www.chinatax.gov.cn/chinatax/whmanuscriptList/n810755?_isAgg=0&_pageSize=2000&_template=index&_channelName=%E6%9C%80%E6%96%B0%E6%96%87%E4%BB%B6&_keyWH=wenhao&"
+    # baseurl = "http://www.chinatax.gov.cn/chinatax/whmanuscriptList/n810755?_isAgg=0&_pageSize=2000&_template=index&_channelName=%E6%9C%80%E6%96%B0%E6%96%87%E4%BB%B6&_keyWH=wenhao&"
+    baseurl = "http://www.chinatax.gov.cn/chinatax/manuscriptList/n810760?_isAgg=0&_pageSize=1000&_template=index&_channelName=%E6%94%BF%E7%AD%96%E8%A7%A3%E8%AF%BB&_keyWH=wenhao&page=1"
     url = baseurl + 'page=' + str(page)
     http = urllib3.PoolManager()
     r = http.request('GET', url)
@@ -28,10 +29,10 @@ def getContent(url):
 
     html_doc = r.data.decode()
     s = BeautifulSoup(html_doc, 'html.parser')
-    title1 = s.find(class_='lanse')
-    title2 = s.find(class_='yanse')
+    title1 = s.find(class_='title sv_texth1')
+    title2 = s.find(class_='laiyuan laiyuan2')
 
-    file = open('最新文件.txt', 'a')
+    file = open('政策解读.txt', 'a')
     file.write('\n\n\n=============================start=================================\n\n\n')
     try:
         file.write(title1.text)
@@ -58,15 +59,12 @@ def getContent(url):
 
     return
 
-i = 1
-while i <= 1:
-    hrefs = fetchUrls(i)
-    for url in hrefs:
-        # print('start: '+url)
-        getContent(url)
-        time.sleep(5)
 
-    i += 1
+hrefs = fetchUrls(1)
+
+for url in hrefs:
+    getContent(url)
+    time.sleep(1)
 
 
-# getContent('http://www.chinatax.gov.cn/chinatax/n810341/n810755/c5149072/content.html')
+
