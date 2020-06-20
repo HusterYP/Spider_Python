@@ -2,9 +2,11 @@ import urllib3
 from bs4 import BeautifulSoup
 import re
 
-def fetchUrls():
+# 获取所有的链接
+# page: 页
+def fetchUrls(page):
     baseurl = "http://www.chinatax.gov.cn/chinatax/whmanuscriptList/n810755?_isAgg=0&_pageSize=20&_template=index&_channelName=%E6%9C%80%E6%96%B0%E6%96%87%E4%BB%B6&_keyWH=wenhao&"
-    url = baseurl + 'page=1'
+    url = baseurl + 'page=' + str(page)
     http = urllib3.PoolManager()
     r = http.request('GET', url)
 
@@ -12,13 +14,14 @@ def fetchUrls():
     s1 = BeautifulSoup(html_doc, 'html.parser')
     links = s1.find_all('a', attrs={"href": re.compile('http:\/\/www\.chinatax\.gov\.cn*')})
 
+    hrefs = []
     for k in links:
-        print(k.get('href'))
+        hrefs.append(k.get('href'))
 
-    return
+    return hrefs
 
-def getContent():
-    url = "http://www.chinatax.gov.cn/chinatax/n810341/n810755/c5153547/content.html"
+# 从url获取文本，追加写到source.txt文件
+def getContent(url):
     http = urllib3.PoolManager()
     r = http.request('GET', url)
 
@@ -26,15 +29,27 @@ def getContent():
     s = BeautifulSoup(html_doc, 'html.parser')
     title1 = s.find(class_='lanse')
     title2 = s.find(class_='yanse')
-    print(title1.text)
-    print(title2.text)
+    file = open('source.txt', 'a')
+    file.write('\n\n\n=============================start=================================\n\n\n')
+    file.write(title1.text)
+    file.write('\n')
+    file.write(title2.text)
+    file.write('\n')
+    file.write('链接：'+url)
+    file.write('\n')
     content = s.find_all('p')
     for p in content:
-        file = open('source.txt', 'a')
         file.write(p.text)
-        file.close()
+        file.write('\n')
 
+    file.write('\n\n\n=============================end===================================\n\n\n')
+    file.close()
+
+    print("Done: "+url)
     return
 
+hrefs = fetchUrls(1)
 
-getContent()
+
+# for url in hrefs:
+#     getContent(url)
